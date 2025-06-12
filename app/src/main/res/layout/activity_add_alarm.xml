@@ -1,0 +1,82 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layoutDirection="rtl"
+    android:background="@color/backgroundColor">
+
+    <!-- دکمه بازگشت -->
+    <ImageButton
+        android:id="@+id/buttonBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_back"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="بازگشت"
+        android:scaleX="-1"
+        android:layout_gravity="end"
+        android:padding="8dp" />
+
+
+    <!-- نام آلارم -->
+    <EditText
+        android:id="@+id/editTextAlarmName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="نام آلارم"
+        android:layout_marginTop="16dp" />
+
+    <!-- یادداشت -->
+    <EditText
+        android:id="@+id/editTextAlarmNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="یادداشت یا لیست وسایل"
+        android:layout_marginTop="8dp" />
+
+    <!-- تاریخ -->
+    <Button
+        android:id="@+id/buttonPickDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="انتخاب تاریخ"
+        android:backgroundTint="@color/colorPrimary"
+        />
+
+    <TextView
+        android:id="@+id/textSelectedDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="تاریخ انتخاب نشده"
+        android:layout_marginBottom="8dp" />
+
+    <!-- ساعت -->
+    <Button
+        android:id="@+id/buttonPickTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="انتخاب ساعت"
+        android:backgroundTint="@color/colorPrimary"
+
+        />
+
+    <TextView
+        android:id="@+id/textSelectedTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ساعت انتخاب نشده"
+        android:layout_marginBottom="16dp"
+        />
+
+
+
+    <Button
+        android:id="@+id/buttonSaveAlarm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ذخیره آلارم"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
