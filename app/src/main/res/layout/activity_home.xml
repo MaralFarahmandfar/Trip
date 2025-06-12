@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor">
+
+    <!-- هدر -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:layoutDirection="rtl"
+
+            android:id="@+id/imageViewProfile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_profile"
+            android:background="@drawable/circle_background"
+            android:padding="6dp"
+            android:contentDescription="پروفایل"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:layoutDirection="rtl"
+            android:id="@+id/textViewTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="سفرهای من"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/imageViewProfile"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="8dp" />
+
+        <View
+            android:id="@+id/pinkUnderline"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimary"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- لیست -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTrips"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/headerLayout"
+        android:layout_above="@+id/buttonNewTrip"
+        android:padding="16dp"
+        android:importantForAccessibility="no"
+        android:contentDescription="لیست سفرهای ثبت شده" />
+
+    <!-- دکمه -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonNewTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:text="سفر جدید"
+        android:textColor="@android:color/white"
+        android:textAllCaps="false"
+        app:cornerRadius="32dp"
+        app:icon="@drawable/ic_add"
+        app:iconGravity="textEnd"
+        android:drawableStart="@drawable/ic_add"
+        app:iconPadding="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:backgroundTint="@color/colorPrimary"
+        android:elevation="6dp"/>
+
+
+    <LinearLayout
+        android:id="@+id/layoutNewTripForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_above="@id/buttonNewTrip"
+        android:visibility="gone"
+        android:background="#FFF5F5F5">
+
+        <EditText
+            android:id="@+id/editTextTripName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="نام سفر" />
+
+        <TextView
+            android:id="@+id/textStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="تاریخ شروع: انتخاب نشده"
+            android:paddingTop="12dp" />
+
+        <Button
+            android:id="@+id/buttonPickStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="انتخاب تاریخ شروع" />
+
+        <TextView
+            android:id="@+id/textEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="تاریخ پایان: انتخاب نشده"
+            android:paddingTop="12dp" />
+
+        <Button
+            android:id="@+id/buttonPickEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="انتخاب تاریخ پایان" />
+
+        <Button
+            android:id="@+id/buttonSaveTrip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ذخیره سفر"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+
+</RelativeLayout>
