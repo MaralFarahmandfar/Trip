@@ -57,7 +57,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home); // مطمئن شو اسم فایل XML تو اینه
+        setContentView(R.layout.activity_home);
 
         // اتصال به ویوها
         layoutNewTripForm = findViewById(R.id.layoutNewTripForm);

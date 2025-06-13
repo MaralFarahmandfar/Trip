@@ -24,6 +24,9 @@
         android:layout_height="wrap_content"
         android:hint="ایمیل"
         android:inputType="textEmailAddress"
+        android:gravity="right|center_vertical"
+        android:textDirection="rtl"
+        android:textColor="@android:color/black"
         android:backgroundTint="@color/colorAccent"/>
 
     <EditText
@@ -33,6 +36,9 @@
         android:hint="رمز عبور"
         android:inputType="textPassword"
         android:layout_marginTop="16dp"
+        android:gravity="right|center_vertical"
+        android:textDirection="rtl"
+        android:textColor="@android:color/black"
         android:backgroundTint="@color/colorAccent"/>
 
     <EditText
@@ -42,6 +48,9 @@
         android:hint="تکرار رمز عبور"
         android:inputType="textPassword"
         android:layout_marginTop="16dp"
+        android:gravity="right|center_vertical"
+        android:textDirection="rtl"
+        android:textColor="@android:color/black"
         android:backgroundTint="@color/colorAccent" />
 
     <Button

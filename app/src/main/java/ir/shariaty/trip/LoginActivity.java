@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonGotoSignUp = findViewById(R.id.buttonGotoSignUp);
 
         buttonLogin.setOnClickListener(v -> loginUser());
+
         buttonGotoSignUp.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
             startActivity(intent);
@@ -42,6 +43,9 @@ public class LoginActivity extends AppCompatActivity {
 
         if ("test@mail.com".equals(email) && "123456".equals(password)) {
             Toast.makeText(this, "ورود موفقیت‌آمیز بود", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
 
         } else {
             Toast.makeText(this, "ایمیل یا رمز اشتباه است", Toast.LENGTH_SHORT).show();
