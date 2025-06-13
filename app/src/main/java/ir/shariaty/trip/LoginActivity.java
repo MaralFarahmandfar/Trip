@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             startActivity(intent);
+            finish();
 
         } else {
             Toast.makeText(this, "ایمیل یا رمز اشتباه است", Toast.LENGTH_SHORT).show();

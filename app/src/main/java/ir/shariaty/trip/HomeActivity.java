@@ -33,31 +33,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerViewTrips);
-        List<Trip> tripList = new ArrayList<>();
-        TripAdapter adapter = new TripAdapter(tripList);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
-// درون buttonSaveTrip:
-        buttonSaveTrip.setOnClickListener(v -> {
-            String name = editTextTripName.getText().toString();
-            String start = textStartDate.getText().toString();
-            String end = textEndDate.getText().toString();
-
-            if (name.isEmpty() || start.contains("انتخاب نشده") || end.contains("انتخاب نشده")) {
-                Toast.makeText(this, "لطفاً همه فیلدها را کامل کنید", Toast.LENGTH_SHORT).show();
-            } else {
-                tripList.add(new Trip(name, start, end));
-                adapter.notifyItemInserted(tripList.size() - 1);
-                layoutNewTripForm.setVisibility(View.GONE);
-                editTextTripName.setText("");
-                textStartDate.setText("تاریخ شروع: انتخاب نشده");
-                textEndDate.setText("تاریخ پایان: انتخاب نشده");
-            }
-        });
-
         // اتصال به ویوها
         layoutNewTripForm = findViewById(R.id.layoutNewTripForm);
         buttonNewTrip = findViewById(R.id.buttonNewTrip);
@@ -67,6 +42,12 @@ public class HomeActivity extends AppCompatActivity {
         textStartDate = findViewById(R.id.textStartDate);
         textEndDate = findViewById(R.id.textEndDate);
         editTextTripName = findViewById(R.id.editTextTripName);
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewTrips);
+        List<Trip> tripList = new ArrayList<>();
+        TripAdapter adapter = new TripAdapter(tripList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
         // نمایش فرم با کلیک روی دکمه سفر جدید
         buttonNewTrip.setOnClickListener(v -> layoutNewTripForm.setVisibility(View.VISIBLE));
@@ -86,6 +67,8 @@ public class HomeActivity extends AppCompatActivity {
             if (name.isEmpty() || start.contains("انتخاب نشده") || end.contains("انتخاب نشده")) {
                 Toast.makeText(this, "لطفاً همه فیلدها را کامل کنید", Toast.LENGTH_SHORT).show();
             } else {
+                tripList.add(new Trip(name, start, end));
+                adapter.notifyItemInserted(tripList.size() - 1);
                 Toast.makeText(this, "سفر '" + name + "' از " + start + " تا " + end + " ذخیره شد!", Toast.LENGTH_LONG).show();
                 layoutNewTripForm.setVisibility(View.GONE);
                 editTextTripName.setText("");
