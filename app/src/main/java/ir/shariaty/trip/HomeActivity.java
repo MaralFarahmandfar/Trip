@@ -30,6 +30,9 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
         RecyclerView recyclerView = findViewById(R.id.recyclerViewTrips);
         List<Trip> tripList = new ArrayList<>();
         TripAdapter adapter = new TripAdapter(tripList);
@@ -54,10 +57,6 @@ public class HomeActivity extends AppCompatActivity {
                 textEndDate.setText("تاریخ پایان: انتخاب نشده");
             }
         });
-
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
 
         // اتصال به ویوها
         layoutNewTripForm = findViewById(R.id.layoutNewTripForm);
