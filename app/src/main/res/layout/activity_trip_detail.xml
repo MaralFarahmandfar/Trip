@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -8,24 +9,29 @@
     android:padding="16dp">
 
     <!-- هدر -->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingTop="12dp"
-        android:paddingBottom="4dp">
+        android:paddingBottom="4dp"
+        android:layoutDirection="rtl">
 
+        <!-- عنوان سفر -->
         <TextView
             android:id="@+id/textTripTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="نام سفر"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
+            android:gravity="start"
             android:layout_marginStart="16dp" />
 
+        <!-- آیکون پروفایل -->
         <ImageView
             android:id="@+id/imageViewProfile"
             android:layout_width="40dp"
@@ -34,10 +40,43 @@
             android:background="@drawable/circle_background"
             android:padding="6dp"
             android:contentDescription="پروفایل"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"/>
-    </RelativeLayout>
+            android:layout_marginEnd="8dp" />
+
+        <!-- دکمه بازگشت -->
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp">
+
+            <ImageButton
+                android:id="@+id/buttonBack"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_back"
+                android:scaleX="-1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="بازگشت"
+                android:padding="6dp" />
+        </FrameLayout>
+    </LinearLayout>
+
+
+    <!-- تاریخ شروع و پایان -->
+    <TextView
+        android:id="@+id/textTripStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="تاریخ شروع: -"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/textTripEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="تاریخ پایان: -"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp"/>
 
     <!-- خط صورتی -->
     <View
@@ -93,12 +132,12 @@
         android:contentDescription="لیست جاذبه‌ها"
         android:importantForAccessibility="no" />
 
+    <!-- دکمه‌های پایین -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp">
 
-        <!-- دکمه جاذبه جدید سمت چپ -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonNewAttraction"
             android:layout_width="wrap_content"
@@ -108,7 +147,6 @@
             app:backgroundTint="@color/colorAccent"
             android:layout_alignParentStart="true" />
 
-        <!-- دکمه افزودن آلارم سمت راست -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAddAlarm"
             android:layout_width="wrap_content"
@@ -117,7 +155,7 @@
             android:textColor="@android:color/white"
             app:backgroundTint="@color/colorPrimary"
             android:layout_alignParentEnd="true" />
-    </RelativeLayout>
 
+    </RelativeLayout>
 
 </LinearLayout>

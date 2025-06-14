@@ -1,15 +1,19 @@
 package ir.shariaty.trip;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder> {
-    private List<Trip> tripList;
+    private final List<Trip> tripList;
 
     public TripAdapter(List<Trip> tripList) {
         this.tripList = tripList;
@@ -26,7 +30,14 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
     public void onBindViewHolder(@NonNull TripViewHolder holder, int position) {
         Trip trip = tripList.get(position);
         holder.name.setText(trip.getName());
-        holder.dates.setText("از " + trip.getStartDate() + " تا " + trip.getEndDate());
+        holder.dates.setText(trip.getStartDate() + " - " + trip.getEndDate());
+
+        // کلیک روی هر آیتم
+        holder.itemView.setOnClickListener(v -> {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, TripDetailsActivity.class);
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -36,11 +47,11 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
 
     static class TripViewHolder extends RecyclerView.ViewHolder {
         TextView name, dates;
-        TripViewHolder(View itemView) {
+
+        public TripViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tripName);
             dates = itemView.findViewById(R.id.tripDates);
         }
     }
 }
-

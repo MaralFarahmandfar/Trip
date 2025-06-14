@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,19 +20,33 @@ public class TripDetailsActivity extends AppCompatActivity {
     private ArrayList<Attraction> attractionList;
     private EditText editTextAttraction;
     private Button buttonConfirmAdd;
+    private View layoutAddAttraction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_detail);
 
+        // اتصال به ویوها
         recyclerView = findViewById(R.id.recyclerViewAttractions);
         editTextAttraction = findViewById(R.id.editTextAttraction);
         buttonConfirmAdd = findViewById(R.id.buttonConfirmAdd);
+        layoutAddAttraction = findViewById(R.id.layoutAddAttraction);
+        Button buttonNewAttraction = findViewById(R.id.buttonNewAttraction);
         ImageButton buttonBack = findViewById(R.id.buttonBack);
 
-        // برگشت
-        buttonBack.setOnClickListener(v -> finish());
+        TextView textTripTitle = findViewById(R.id.textTripTitle);
+        TextView textTripStart = findViewById(R.id.textTripStartDate);
+        TextView textTripEnd = findViewById(R.id.textTripEndDate);
+
+        // گرفتن اطلاعات سفر از Intent
+        String tripName = getIntent().getStringExtra("trip_name");
+        String startDate = getIntent().getStringExtra("start_date");
+        String endDate = getIntent().getStringExtra("end_date");
+
+        textTripTitle.setText(tripName);
+        textTripStart.setText("تاریخ شروع: " + startDate);
+        textTripEnd.setText("تاریخ پایان: " + endDate);
 
         // لیست جاذبه‌ها
         attractionList = new ArrayList<>();
@@ -39,22 +54,20 @@ public class TripDetailsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // تایید افزودن
+        // افزودن جاذبه جدید
         buttonConfirmAdd.setOnClickListener(v -> {
             String name = editTextAttraction.getText().toString().trim();
             if (!name.isEmpty()) {
-                Attraction attraction = new Attraction(name);
-                attractionList.add(attraction);
+                attractionList.add(new Attraction(name));
                 adapter.notifyItemInserted(attractionList.size() - 1);
                 editTextAttraction.setText("");
             }
         });
 
-        // نمایش فرم افزودن جاذبه
-        Button buttonNewAttraction = findViewById(R.id.buttonNewAttraction);
-        View layoutAddAttraction = findViewById(R.id.layoutAddAttraction);
-        buttonNewAttraction.setOnClickListener(v -> {
-            layoutAddAttraction.setVisibility(View.VISIBLE);
-        });
+        // نمایش فرم اضافه کردن جاذبه
+        buttonNewAttraction.setOnClickListener(v -> layoutAddAttraction.setVisibility(View.VISIBLE));
+
+        // دکمه بازگشت
+        buttonBack.setOnClickListener(v -> finish());
     }
 }

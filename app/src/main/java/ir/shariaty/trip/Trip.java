@@ -1,5 +1,4 @@
 package ir.shariaty.trip;
-
 public class Trip {
     private String name;
     private String startDate;
@@ -11,8 +10,15 @@ public class Trip {
         this.endDate = endDate;
     }
 
-    public String getName() { return name; }
-    public String getStartDate() { return startDate; }
-    public String getEndDate() { return endDate; }
-}
+    public String getName() {
+        return name;
+    }
 
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+}

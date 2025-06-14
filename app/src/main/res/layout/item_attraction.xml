@@ -1,8 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
+    <!-- ردیف اصلی با چک‌باکس و دکمه‌ها -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -10,37 +12,48 @@
         android:padding="8dp"
         android:gravity="center_vertical">
 
+        <!-- چک‌باکس با نام جاذبه -->
         <CheckBox
             android:id="@+id/checkBoxAttraction"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="جاذبه نمونه" />
+            android:text="جاذبه نمونه"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
 
+        <!-- دکمه ویرایش -->
         <ImageButton
             android:id="@+id/buttonEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
             android:src="@drawable/ic_edit"
-            android:contentDescription="ویرایش"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="ویرایش جاذبه" />
 
+        <!-- دکمه حذف -->
         <ImageButton
             android:id="@+id/buttonDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
             android:src="@drawable/ic_delete"
-            android:contentDescription="حذف"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="حذف جاذبه" />
     </LinearLayout>
 
+    <!-- خط زیر هر آیتم -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="2dp"
         android:background="@color/colorAccent" />
-    <!-- خط آبی زیر هر آیتم -->
-<!--    <View-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="1dp"-->
-<!--        android:background="@drawable/blue_line_separator" />-->
+
+    <!-- آی‌دی مخفی برای جاذبه در صورت نیاز -->
+    <TextView
+        android:id="@+id/attractionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="hidden" />
 </LinearLayout>
