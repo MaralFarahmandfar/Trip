@@ -51,10 +51,10 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(SignUpActivity.this, "ثبت‌نام موفق بود", Toast.LENGTH_SHORT).show();
-                        finish(); // برمی‌گردی به LoginActivity
+                        Toast.makeText(SignUpActivity.this, "ثبت ‌نام موفق بود", Toast.LENGTH_SHORT).show();
+                        finish();
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌نام: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در ثبت ‌نام: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
