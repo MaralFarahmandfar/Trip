@@ -42,6 +42,16 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "ایمیل معتبر وارد کنید", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (password.length() < 6) {
+            Toast.makeText(this, "رمز عبور باید حداقل 6 کاراکتر باشد", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (!password.equals(confirmPassword)) {
             Toast.makeText(this, "رمز عبور و تکرار آن یکسان نیستند", Toast.LENGTH_SHORT).show();
             return;
@@ -51,10 +61,10 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(SignUpActivity.this, "ثبت ‌نام موفق بود", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, "ثبت‌نام موفق بود", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در ثبت ‌نام: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌ نام: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
