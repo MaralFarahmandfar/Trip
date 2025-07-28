@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="1/1/2025 - 3/1/2025"
             android:textSize="14sp"
-            android:textColor="#555555" />
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
     <!-- خط آبی جداکننده -->
