@@ -132,6 +132,14 @@
         android:contentDescription="لیست جاذبه‌ها"
         android:importantForAccessibility="no" />
 
+    <!-- لیست آلارم‌ها -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewAlarms"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp" />
+
     <!-- دکمه‌های پایین -->
     <RelativeLayout
         android:layout_width="match_parent"

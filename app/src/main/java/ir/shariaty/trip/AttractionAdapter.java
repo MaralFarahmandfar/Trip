@@ -2,18 +2,18 @@ package ir.shariaty.trip;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.widget.CheckBox;
-
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.CheckBox;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.ViewHolder> {
-    private Context context;
-    private List<Attraction> attractionList;
+    private final Context context;
+    private final List<Attraction> attractionList;
 
     public AttractionAdapter(Context context, List<Attraction> attractionList) {
         this.context = context;
@@ -29,7 +29,10 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.textView.setText(attractionList.get(position).getName());
+        Attraction attraction = attractionList.get(position);
+        holder.checkBoxAttraction.setText(attraction.getName() != null ? attraction.getName() : "بدون نام");
+        // می‌توانید وضعیت CheckBox را بر اساس داده‌های Attraction تنظیم کنید
+        holder.checkBoxAttraction.setChecked(false); // به‌طور پیش‌فرض غیرفعال
     }
 
     @Override
@@ -38,11 +41,11 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        CheckBox checkBoxAttraction;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            CheckBox attractionName = itemView.findViewById(R.id.checkBoxAttraction);
+            checkBoxAttraction = itemView.findViewById(R.id.checkBoxAttraction);
         }
     }
 }
