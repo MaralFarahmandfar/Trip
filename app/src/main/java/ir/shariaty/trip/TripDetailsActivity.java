@@ -18,12 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class TripDetailsActivity extends AppCompatActivity {
 
@@ -39,6 +41,9 @@ public class TripDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private String tripId, tripName, startDate, endDate;
+    private ListenerRegistration attractionsListener, alarmsListener;
+    private boolean isLoadingAttractions = false;
+    private boolean isLoadingAlarms = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +61,7 @@ public class TripDetailsActivity extends AppCompatActivity {
 
         // مقداردهی ویوها
         recyclerViewAttractions = findViewById(R.id.recyclerViewAttractions);
-        recyclerViewAlarms = findViewById(R.id.recyclerViewAlarms); // فرض بر وجود این ویو در layout
+        recyclerViewAlarms = findViewById(R.id.recyclerViewAlarms);
         editTextAttraction = findViewById(R.id.editTextAttraction);
         buttonConfirmAdd = findViewById(R.id.buttonConfirmAdd);
         layoutAddAttraction = findViewById(R.id.layoutAddAttraction);
@@ -112,95 +117,9 @@ public class TripDetailsActivity extends AppCompatActivity {
             Toast.makeText(this, "اتصال اینترنت موجود نیست، داده‌ها از کش نمایش داده می‌شوند", Toast.LENGTH_LONG).show();
         }
 
-        // بازیابی جاذبه‌ها
-        db.collection("trips").document(tripId).collection("attractions")
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Log.e(TAG, "Error loading attractions", e);
-                        Toast.makeText(this, "خطا در بازیابی جاذبه‌ها: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    if (queryDocumentSnapshots != null) {
-                        attractionList.clear();
-                        for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                            switch (dc.getType()) {
-                                case ADDED:
-                                    Attraction attraction = dc.getDocument().toObject(Attraction.class);
-                                    attractionList.add(attraction);
-                                    attractionAdapter.notifyItemInserted(attractionList.size() - 1);
-                                    Log.d(TAG, "Attraction added: " + attraction.getName());
-                                    break;
-                                case MODIFIED:
-                                    Attraction updatedAttraction = dc.getDocument().toObject(Attraction.class);
-                                    for (int i = 0; i < attractionList.size(); i++) {
-                                        if (attractionList.get(i).getName().equals(updatedAttraction.getName())) {
-                                            attractionList.set(i, updatedAttraction);
-                                            attractionAdapter.notifyItemChanged(i);
-                                            Log.d(TAG, "Attraction updated: " + updatedAttraction.getName());
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                case REMOVED:
-                                    String removedName = dc.getDocument().toObject(Attraction.class).getName();
-                                    for (int i = 0; i < attractionList.size(); i++) {
-                                        if (attractionList.get(i).getName().equals(removedName)) {
-                                            attractionList.remove(i);
-                                            attractionAdapter.notifyItemRemoved(i);
-                                            Log.d(TAG, "Attraction removed: " + removedName);
-                                            break;
-                                        }
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                });
-
-        // بازیابی آلارم‌ها
-        db.collection("trips").document(tripId).collection("alarms")
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Log.e(TAG, "Error loading alarms", e);
-                        Toast.makeText(this, "خطا در بازیابی آلارم‌ها: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    if (queryDocumentSnapshots != null) {
-                        alarmList.clear();
-                        for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                            switch (dc.getType()) {
-                                case ADDED:
-                                    Alarm alarm = dc.getDocument().toObject(Alarm.class);
-                                    alarmList.add(alarm);
-                                    alarmAdapter.notifyItemInserted(alarmList.size() - 1);
-                                    Log.d(TAG, "Alarm added: " + alarm.getName());
-                                    break;
-                                case MODIFIED:
-                                    Alarm updatedAlarm = dc.getDocument().toObject(Alarm.class);
-                                    for (int i = 0; i < alarmList.size(); i++) {
-                                        if (alarmList.get(i).getId().equals(updatedAlarm.getId())) {
-                                            alarmList.set(i, updatedAlarm);
-                                            alarmAdapter.notifyItemChanged(i);
-                                            Log.d(TAG, "Alarm updated: " + updatedAlarm.getName());
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                case REMOVED:
-                                    String removedId = dc.getDocument().getId();
-                                    for (int i = 0; i < alarmList.size(); i++) {
-                                        if (alarmList.get(i).getId().equals(removedId)) {
-                                            alarmList.remove(i);
-                                            alarmAdapter.notifyItemRemoved(i);
-                                            Log.d(TAG, "Alarm removed: " + removedId);
-                                            break;
-                                        }
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                });
+        // بازیابی جاذبه‌ها و آلارم‌ها
+        loadAttractions();
+        loadAlarms();
 
         // افزودن جاذبه جدید
         buttonConfirmAdd.setOnClickListener(v -> {
@@ -214,10 +133,11 @@ public class TripDetailsActivity extends AppCompatActivity {
                 db.collection("trips").document(tripId).collection("attractions")
                         .add(attraction)
                         .addOnSuccessListener(documentReference -> {
+                            attraction.setId(documentReference.getId());
                             editTextAttraction.setText("");
                             layoutAddAttraction.setVisibility(View.GONE);
                             Toast.makeText(this, "جاذبه اضافه شد", Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "Attraction saved: " + name);
+                            Log.d(TAG, "Attraction saved: " + name + ", id: " + documentReference.getId());
                         })
                         .addOnFailureListener(e -> {
                             Log.e(TAG, "Error saving attraction", e);
@@ -238,12 +158,91 @@ public class TripDetailsActivity extends AppCompatActivity {
         buttonAddAlarm.setOnClickListener(v -> {
             if (tripId == null) {
                 Toast.makeText(this, "شناسه سفر نامعتبر است", Toast.LENGTH_SHORT).show();
-                return;
+            } else {
+                Intent intent = new Intent(TripDetailsActivity.this, AddAlarmActivity.class);
+                intent.putExtra("trip_id", tripId);
+                startActivity(intent);
             }
-            Intent intent = new Intent(TripDetailsActivity.this, AddAlarmActivity.class);
-            intent.putExtra("trip_id", tripId);
-            startActivity(intent);
         });
+    }
+
+    private void loadAttractions() {
+        if (isLoadingAttractions) {
+            Log.d(TAG, "loadAttractions skipped: already loading");
+            return;
+        }
+        isLoadingAttractions = true;
+        attractionsListener = db.collection("trips").document(tripId).collection("attractions")
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    isLoadingAttractions = false;
+                    if (e != null) {
+                        Log.e(TAG, "Error loading attractions", e);
+                        Toast.makeText(this, "خطا در بازیابی جاذبه‌ها: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    updateAttractions(queryDocumentSnapshots);
+                });
+    }
+
+    private void updateAttractions(QuerySnapshot queryDocumentSnapshots) {
+        if (queryDocumentSnapshots != null) {
+            List<Attraction> newAttractions = new ArrayList<>();
+            for (var doc : queryDocumentSnapshots.getDocuments()) {
+                Attraction attraction = doc.toObject(Attraction.class);
+                attraction.setId(doc.getId());
+                newAttractions.add(attraction);
+                Log.d(TAG, "Attraction processed: " + attraction.getName() + ", id: " + doc.getId());
+            }
+            attractionAdapter.updateAttractions(newAttractions);
+            Log.d(TAG, "Attractions updated, size: " + newAttractions.size());
+        }
+    }
+
+    private void loadAlarms() {
+        if (isLoadingAlarms) {
+            Log.d(TAG, "loadAlarms skipped: already loading");
+            return;
+        }
+        isLoadingAlarms = true;
+        alarmsListener = db.collection("trips").document(tripId).collection("alarms")
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    isLoadingAlarms = false;
+                    if (e != null) {
+                        Log.e(TAG, "Error loading alarms", e);
+                        Toast.makeText(this, "خطا در بازیابی آلارم‌ها: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    updateAlarms(queryDocumentSnapshots);
+                });
+    }
+
+    private void updateAlarms(QuerySnapshot queryDocumentSnapshots) {
+        if (queryDocumentSnapshots != null) {
+            List<Alarm> newAlarms = new ArrayList<>();
+            for (var doc : queryDocumentSnapshots.getDocuments()) {
+                Alarm alarm = doc.toObject(Alarm.class);
+                alarm.setId(doc.getId());
+                newAlarms.add(alarm);
+                Log.d(TAG, "Alarm processed: " + alarm.getName() + ", id: " + doc.getId());
+            }
+            alarmAdapter.updateAlarms(newAlarms);
+            Log.d(TAG, "Alarms updated, size: " + newAlarms.size());
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (attractionsListener != null) {
+            attractionsListener.remove();
+            attractionsListener = null;
+            Log.d(TAG, "Attractions SnapshotListener removed");
+        }
+        if (alarmsListener != null) {
+            alarmsListener.remove();
+            alarmsListener = null;
+            Log.d(TAG, "Alarms SnapshotListener removed");
+        }
     }
 
     private boolean isNetworkAvailable() {

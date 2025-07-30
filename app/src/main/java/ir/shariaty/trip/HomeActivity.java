@@ -2,6 +2,7 @@ package ir.shariaty.trip;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -13,8 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private static final String TAG = "HomeActivity";
     LinearLayout layoutNewTripForm;
     Button buttonNewTrip, buttonPickStartDate, buttonPickEndDate, buttonSaveTrip;
     TextView textStartDate, textEndDate;
@@ -33,6 +37,8 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private List<Trip> tripList = new ArrayList<>();
     private TripAdapter adapter;
+    private ListenerRegistration tripsListener;
+    private boolean isLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,11 @@ public class HomeActivity extends AppCompatActivity {
 
         // اتصال به Firebase
         db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
         mAuth = FirebaseAuth.getInstance();
 
         // اتصال به ویوها
@@ -55,7 +66,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // تنظیم RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerViewTrips);
-        adapter = new TripAdapter(tripList);
+        adapter = new TripAdapter(this, tripList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -108,6 +119,16 @@ public class HomeActivity extends AppCompatActivity {
         loadTrips();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (tripsListener != null) {
+            tripsListener.remove();
+            tripsListener = null;
+            Log.d(TAG, "SnapshotListener removed");
+        }
+    }
+
     // نمایش دیالوگ تاریخ
     private void showDatePicker(TextView target) {
         Calendar calendar = Calendar.getInstance();
@@ -130,49 +151,40 @@ public class HomeActivity extends AppCompatActivity {
 
     // بازیابی سفرها از Firestore
     private void loadTrips() {
+        if (isLoading) {
+            Log.d(TAG, "loadTrips skipped: already loading");
+            return;
+        }
         if (mAuth.getCurrentUser() == null) {
             Toast.makeText(this, "کاربر وارد نشده است", Toast.LENGTH_SHORT).show();
             return;
         }
+        isLoading = true;
         String uid = mAuth.getCurrentUser().getUid();
-        db.collection("trips")
+        tripsListener = db.collection("trips")
                 .whereEqualTo("uid", uid)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    isLoading = false;
                     if (e != null) {
+                        Log.e(TAG, "Error loading trips", e);
                         Toast.makeText(this, "خطا در بازیابی سفرها: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                        switch (dc.getType()) {
-                            case ADDED:
-                                Trip trip = dc.getDocument().toObject(Trip.class);
-                                trip = new Trip(dc.getDocument().getId(), trip.getName(), trip.getUid(), trip.getStartDate(), trip.getEndDate());
-                                tripList.add(trip);
-                                adapter.notifyItemInserted(tripList.size() - 1);
-                                break;
-                            case MODIFIED:
-                                Trip updatedTrip = dc.getDocument().toObject(Trip.class);
-                                updatedTrip = new Trip(dc.getDocument().getId(), updatedTrip.getName(), updatedTrip.getUid(), updatedTrip.getStartDate(), updatedTrip.getEndDate());
-                                for (int i = 0; i < tripList.size(); i++) {
-                                    if (tripList.get(i).getId().equals(updatedTrip.getId())) {
-                                        tripList.set(i, updatedTrip);
-                                        adapter.notifyItemChanged(i);
-                                        break;
-                                    }
-                                }
-                                break;
-                            case REMOVED:
-                                String removedId = dc.getDocument().getId();
-                                for (int i = 0; i < tripList.size(); i++) {
-                                    if (tripList.get(i).getId().equals(removedId)) {
-                                        tripList.remove(i);
-                                        adapter.notifyItemRemoved(i);
-                                        break;
-                                    }
-                                }
-                                break;
-                        }
-                    }
+                    updateTrips(queryDocumentSnapshots);
                 });
+    }
+
+    private void updateTrips(QuerySnapshot queryDocumentSnapshots) {
+        if (queryDocumentSnapshots != null) {
+            List<Trip> newTrips = new ArrayList<>();
+            for (var doc : queryDocumentSnapshots.getDocuments()) {
+                Trip trip = doc.toObject(Trip.class);
+                trip.setId(doc.getId());
+                newTrips.add(trip);
+                Log.d(TAG, "Trip processed: " + trip.getName() + ", id: " + doc.getId());
+            }
+            adapter.updateTrips(newTrips);
+            Log.d(TAG, "Trips updated, size: " + newTrips.size());
+        }
     }
 }
