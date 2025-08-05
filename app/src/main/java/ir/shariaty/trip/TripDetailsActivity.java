@@ -50,10 +50,10 @@ public class TripDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_detail);
 
-        // اتصال به Firebase Firestore و فعال کردن کش
+        // اتصال به Firebase Firestore
         db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
+                .setPersistenceEnabled(false) // غیرفعال کردن کش
                 .build();
         db.setFirestoreSettings(settings);
 
@@ -113,8 +113,10 @@ public class TripDetailsActivity extends AppCompatActivity {
         }
 
         if (!isNetworkAvailable()) {
-            Log.w(TAG, "No internet connection, loading from cache");
-            Toast.makeText(this, "اتصال اینترنت موجود نیست، داده‌ها از کش نمایش داده می‌شوند", Toast.LENGTH_LONG).show();
+            Log.w(TAG, "No internet connection, app requires internet since cache is disabled");
+            Toast.makeText(this, "اتصال اینترنت موجود نیست، لطفاً به اینترنت متصل شوید", Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
 
         // بازیابی جاذبه‌ها و آلارم‌ها
@@ -152,7 +154,12 @@ public class TripDetailsActivity extends AppCompatActivity {
         buttonNewAttraction.setOnClickListener(v -> layoutAddAttraction.setVisibility(View.VISIBLE));
 
         // دکمه بازگشت
-        buttonBack.setOnClickListener(v -> finish());
+        buttonBack.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
         // رفتن به صفحه تنظیم آلارم
         buttonAddAlarm.setOnClickListener(v -> {
@@ -173,14 +180,16 @@ public class TripDetailsActivity extends AppCompatActivity {
         }
         isLoadingAttractions = true;
         attractionsListener = db.collection("trips").document(tripId).collection("attractions")
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                .addSnapshotListener(this, (queryDocumentSnapshots, e) -> {
                     isLoadingAttractions = false;
                     if (e != null) {
                         Log.e(TAG, "Error loading attractions", e);
                         Toast.makeText(this, "خطا در بازیابی جاذبه‌ها: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    updateAttractions(queryDocumentSnapshots);
+                    if (queryDocumentSnapshots != null) {
+                        updateAttractions(queryDocumentSnapshots);
+                    }
                 });
     }
 
@@ -205,14 +214,16 @@ public class TripDetailsActivity extends AppCompatActivity {
         }
         isLoadingAlarms = true;
         alarmsListener = db.collection("trips").document(tripId).collection("alarms")
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                .addSnapshotListener(this, (queryDocumentSnapshots, e) -> {
                     isLoadingAlarms = false;
                     if (e != null) {
                         Log.e(TAG, "Error loading alarms", e);
                         Toast.makeText(this, "خطا در بازیابی آلارم‌ها: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    updateAlarms(queryDocumentSnapshots);
+                    if (queryDocumentSnapshots != null) {
+                        updateAlarms(queryDocumentSnapshots);
+                    }
                 });
     }
 

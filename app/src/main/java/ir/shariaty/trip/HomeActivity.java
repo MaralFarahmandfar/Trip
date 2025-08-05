@@ -1,6 +1,7 @@
 package ir.shariaty.trip;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,8 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -48,7 +51,7 @@ public class HomeActivity extends AppCompatActivity {
         // اتصال به Firebase
         db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
+                .setPersistenceEnabled(false) // غیرفعال کردن کش
                 .build();
         db.setFirestoreSettings(settings);
 
@@ -69,6 +72,15 @@ public class HomeActivity extends AppCompatActivity {
         adapter = new TripAdapter(this, tripList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        // بررسی وضعیت کاربر
+        if (mAuth.getCurrentUser() == null) {
+            Log.e(TAG, "User not logged in");
+            Toast.makeText(this, "کاربر وارد نشده است", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
 
         // نمایش فرم با کلیک روی دکمه سفر جدید
         buttonNewTrip.setOnClickListener(v -> layoutNewTripForm.setVisibility(View.VISIBLE));
@@ -97,7 +109,7 @@ public class HomeActivity extends AppCompatActivity {
                 db.collection("trips")
                         .add(newTrip)
                         .addOnSuccessListener(documentReference -> {
-                            Trip savedTrip = new Trip(documentReference.getId(), name, uid, startDate, endDate);
+                            newTrip.setId(documentReference.getId());
                             Toast.makeText(this, "سفر '" + name + "' با موفقیت ذخیره شد", Toast.LENGTH_SHORT).show();
                             layoutNewTripForm.setVisibility(View.GONE);
                             editTextTripName.setText("");
@@ -116,6 +128,12 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        if (tripsListener != null) {
+            tripsListener.remove();
+            tripsListener = null;
+            Log.d(TAG, "Existing SnapshotListener removed in onStart");
+        }
         loadTrips();
     }
 
@@ -125,7 +143,7 @@ public class HomeActivity extends AppCompatActivity {
         if (tripsListener != null) {
             tripsListener.remove();
             tripsListener = null;
-            Log.d(TAG, "SnapshotListener removed");
+            Log.d(TAG, "SnapshotListener removed in onStop");
         }
     }
 
@@ -163,25 +181,35 @@ public class HomeActivity extends AppCompatActivity {
         String uid = mAuth.getCurrentUser().getUid();
         tripsListener = db.collection("trips")
                 .whereEqualTo("uid", uid)
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                .addSnapshotListener(this, (queryDocumentSnapshots, e) -> {
                     isLoading = false;
                     if (e != null) {
                         Log.e(TAG, "Error loading trips", e);
                         Toast.makeText(this, "خطا در بازیابی سفرها: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    updateTrips(queryDocumentSnapshots);
+                    if (queryDocumentSnapshots != null) {
+                        updateTrips(queryDocumentSnapshots);
+                    }
                 });
     }
 
     private void updateTrips(QuerySnapshot queryDocumentSnapshots) {
         if (queryDocumentSnapshots != null) {
+            // استفاده از Set برای جلوگیری از آیتم‌های تکراری
+            Set<String> tripIds = new HashSet<>();
             List<Trip> newTrips = new ArrayList<>();
             for (var doc : queryDocumentSnapshots.getDocuments()) {
-                Trip trip = doc.toObject(Trip.class);
-                trip.setId(doc.getId());
-                newTrips.add(trip);
-                Log.d(TAG, "Trip processed: " + trip.getName() + ", id: " + doc.getId());
+                String docId = doc.getId();
+                if (!tripIds.contains(docId)) {
+                    Trip trip = doc.toObject(Trip.class);
+                    trip.setId(docId);
+                    newTrips.add(trip);
+                    tripIds.add(docId);
+                    Log.d(TAG, "Trip processed: " + trip.getName() + ", id: " + docId);
+                } else {
+                    Log.w(TAG, "Duplicate trip ignored: " + docId);
+                }
             }
             adapter.updateTrips(newTrips);
             Log.d(TAG, "Trips updated, size: " + newTrips.size());

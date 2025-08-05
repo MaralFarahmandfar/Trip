@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -38,9 +41,27 @@ public class AddAlarmActivity extends AppCompatActivity {
 
         // اتصال به Firestore
         db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        db.setFirestoreSettings(settings);
 
         // گرفتن tripId از Intent
         tripId = getIntent().getStringExtra("trip_id");
+        if (tripId == null || tripId.isEmpty()) {
+            Log.e(TAG, "Invalid trip_id");
+            Toast.makeText(this, "شناسه سفر نامعتبر است", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        // بررسی اتصال اینترنت
+        if (!isNetworkAvailable()) {
+            Log.w(TAG, "No internet connection, app requires internet since cache is disabled");
+            Toast.makeText(this, "اتصال اینترنت موجود نیست، لطفاً به اینترنت متصل شوید", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         // مقداردهی ویوها
         editTextAlarmName = findViewById(R.id.editTextAlarmName);
@@ -74,6 +95,11 @@ public class AddAlarmActivity extends AppCompatActivity {
 
         // ذخیره آلارم
         buttonSaveAlarm.setOnClickListener(v -> {
+            if (!isNetworkAvailable()) {
+                Toast.makeText(this, "اتصال اینترنت موجود نیست", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             String name = editTextAlarmName.getText().toString().trim();
             String note = editTextAlarmNote.getText().toString().trim();
 
@@ -90,7 +116,7 @@ public class AddAlarmActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance();
             calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, selectedMinute, 0);
 
-            if (calendar.before(Calendar.getInstance())) {
+            if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
                 Toast.makeText(this, "زمان انتخاب شده معتبر نیست", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -122,7 +148,6 @@ public class AddAlarmActivity extends AppCompatActivity {
                 db.collection("trips").document(tripId).collection("alarms")
                         .add(alarm)
                         .addOnSuccessListener(documentReference -> {
-                            Log.d(TAG, "Alarm saved with ID: " + documentReference.getId());
                             Toast.makeText(this, "آلارم تنظیم و ذخیره شد", Toast.LENGTH_SHORT).show();
                             finish();
                         })
@@ -135,5 +160,14 @@ public class AddAlarmActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
     }
 }
