@@ -89,7 +89,7 @@
         android:id="@+id/textTasksTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="لیست کارها"
+        android:text="جاذبه ها "
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
@@ -131,6 +131,18 @@
         android:paddingTop="8dp"
         android:contentDescription="لیست جاذبه‌ها"
         android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/textAlarmsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="آلارم‌ها"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="start"
+        android:layout_marginTop="16dp" />
+
 
     <!-- لیست آلارم‌ها -->
     <androidx.recyclerview.widget.RecyclerView

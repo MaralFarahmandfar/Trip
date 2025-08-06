@@ -87,7 +87,7 @@ public class TripDetailsActivity extends AppCompatActivity {
         textTripEnd.setText("تاریخ پایان: " + (endDate != null ? endDate : "نامشخص"));
 
         // تنظیم RecyclerView برای جاذبه‌ها
-        attractionAdapter = new AttractionAdapter(this, attractionList);
+        attractionAdapter = new AttractionAdapter(this, attractionList, tripId);
         recyclerViewAttractions.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAttractions.setAdapter(attractionAdapter);
 

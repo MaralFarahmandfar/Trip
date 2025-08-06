@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.content.pm.PackageManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,10 +36,25 @@ public class AddAlarmActivity extends AppCompatActivity {
     private String tripId;
     private int selectedYear = -1, selectedMonth = -1, selectedDay = -1, selectedHour = -1, selectedMinute = -1;
 
+    private static final int REQUEST_CODE_NOTIFICATION_PERMISSION = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {  // اندروید 13 و بالاتر
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alarm);
+
+
+
 
         // اتصال به Firestore
         db = FirebaseFirestore.getInstance();
@@ -160,6 +177,18 @@ public class AddAlarmActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_NOTIFICATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "دسترسی نوتیفیکیشن داده شد", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "دسترسی نوتیفیکیشن رد شد", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private boolean isNetworkAvailable() {
