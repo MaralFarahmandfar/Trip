@@ -10,6 +10,10 @@ public class Attraction {
     public Attraction() {
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Attraction(String id, String name, Date createdAt) {
         this.id = id;
         this.name = name;
