@@ -59,5 +59,10 @@
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@android:color/white"/>
 
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/buttonGoogleSignIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>
