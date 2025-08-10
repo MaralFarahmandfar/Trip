@@ -127,7 +127,7 @@ public class TripDetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "اتصال اینترنت موجود نیست", Toast.LENGTH_LONG).show();
                 return;
             }
-            Attraction attraction = new Attraction("", attractionName, new Date());
+            Attraction attraction = new Attraction("", attractionName, new Date(), false);
             db.collection("trips").document(tripId).collection("attractions")
                     .add(attraction)
                     .addOnSuccessListener(documentReference -> {

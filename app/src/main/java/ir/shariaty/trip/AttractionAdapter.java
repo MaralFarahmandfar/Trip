@@ -7,36 +7,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.AlertDialog;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.ViewHolder> {
     private static final String TAG = "AttractionAdapter";
     private final Context context;
     private final List<Attraction> attractionList;
-
-    private String tripId;
+    private final String tripId;
 
     public AttractionAdapter(Context context, List<Attraction> attractionList, String tripId) {
         this.context = context;
         this.attractionList = new ArrayList<>(attractionList);
         this.tripId = tripId;
-
     }
 
     @NonNull
@@ -51,9 +44,26 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
         Log.d(TAG, "Binding position: " + position + ", attractionList size: " + attractionList.size());
         Attraction attraction = attractionList.get(position);
         holder.checkBoxAttraction.setText(attraction.getName() != null ? attraction.getName() : "بدون نام");
+        holder.checkBoxAttraction.setChecked(attraction.getIsChecked());
 
+        // Listener برای تغییرات تیک
+        holder.checkBoxAttraction.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            attraction.setIsChecked(isChecked);
+            FirebaseFirestore.getInstance()
+                    .collection("trips")
+                    .document(tripId)
+                    .collection("attractions")
+                    .document(attraction.getId())
+                    .update("isChecked", isChecked)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Check status updated for attraction: " + attraction.getName());
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "خطا در ذخیره وضعیت تیک: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        });
 
-
+        // دکمه حذف
         holder.buttonDelete.setOnClickListener(v -> {
             if (attraction.getId() != null) {
                 FirebaseFirestore.getInstance()
@@ -71,8 +81,7 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
             }
         });
 
-
-// دکمه ویرایش
+        // دکمه ویرایش
         holder.buttonEdit.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("ویرایش جاذبه");
@@ -81,9 +90,10 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
             input.setText(attraction.getName());
             builder.setView(input);
 
-            builder.setPositiveButton("ذخیره", (dialog, which) -> {
+            builder.setPositiveButton("تأیید", (dialog, which) -> {
                 String newName = input.getText().toString().trim();
                 if (!newName.isEmpty()) {
+                    attraction.setName(newName);
                     FirebaseFirestore.getInstance()
                             .collection("trips")
                             .document(tripId)
@@ -91,12 +101,10 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
                             .document(attraction.getId())
                             .update("name", newName)
                             .addOnSuccessListener(aVoid -> {
-                                attraction.setName(newName);
-                                notifyItemChanged(holder.getAdapterPosition());
-                                Toast.makeText(context, "ویرایش شد", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "جاذبه ویرایش شد", Toast.LENGTH_SHORT).show();
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(context, "خطا در ویرایش", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "خطا در ویرایش: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 }
             });
@@ -104,8 +112,6 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
             builder.setNegativeButton("انصراف", (dialog, which) -> dialog.dismiss());
             builder.show();
         });
-
-        holder.checkBoxAttraction.setChecked(false); // به‌طور پیش‌فرض غیرفعال
     }
 
     @Override
@@ -127,13 +133,11 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
         CheckBox checkBoxAttraction;
         ImageButton buttonEdit, buttonDelete;
 
-
         public ViewHolder(View itemView) {
             super(itemView);
             checkBoxAttraction = itemView.findViewById(R.id.checkBoxAttraction);
             buttonEdit = itemView.findViewById(R.id.buttonEdit);
             buttonDelete = itemView.findViewById(R.id.buttonDelete);
-
         }
     }
 
@@ -168,7 +172,8 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
             Attraction oldAttraction = oldList.get(oldItemPosition);
             Attraction newAttraction = newList.get(newItemPosition);
             return (oldAttraction.getName() == null ? newAttraction.getName() == null : oldAttraction.getName().equals(newAttraction.getName())) &&
-                    (oldAttraction.getCreatedAt() == null ? newAttraction.getCreatedAt() == null : oldAttraction.getCreatedAt().equals(newAttraction.getCreatedAt()));
+                    (oldAttraction.getCreatedAt() == null ? newAttraction.getCreatedAt() == null : oldAttraction.getCreatedAt().equals(newAttraction.getCreatedAt())) &&
+                    oldAttraction.getIsChecked() == newAttraction.getIsChecked();
         }
     }
 }
