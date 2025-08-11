@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- شکل سفید بزرگ‌تر به عنوان حاشیه بیرونی -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" /> <!-- رنگ سفید -->
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+
+    <!-- شکل داخلی با فاصله از بیرون -->
+    <item android:left="4dp" android:top="4dp" android:right="4dp" android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#D4E2ED" /> <!-- رنگ داخل -->
+            <stroke android:width="2dp" android:color="#E91E63
+" /> <!-- حاشیه صورتی -->
+            <corners android:radius="12dp" /> <!-- گوشه‌ها کمی کوچکتر -->
+        </shape>
+    </item>
+
+</layer-list>

@@ -100,7 +100,28 @@ public class TripDetailsActivity extends AppCompatActivity {
 
         // تنظیم RecyclerView برای آلارم‌ها
         recyclerViewAlarms.setLayoutManager(new LinearLayoutManager(this));
-        alarmAdapter = new AlarmAdapter(this, alarmList);
+        alarmAdapter = new AlarmAdapter(this, alarmList, alarm -> {
+            // حذف آلارم از لیست محلی و به‌روزرسانی فوری UI
+            alarmList.remove(alarm);
+            alarmAdapter.updateAlarms(new ArrayList<>(alarmList));
+
+            // سپس حذف از Firebase
+            db.collection("trips").document(tripId).collection("alarms")
+                    .document(alarm.getId())
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(TripDetailsActivity.this, "آلارم حذف شد", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(TripDetailsActivity.this, "خطا در حذف آلارم", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Error deleting alarm", e);
+
+                        // اگر حذف موفق نبود، آلارم را دوباره به لیست محلی اضافه کن و آداپتر را به‌روزرسانی کن
+                        alarmList.add(alarm);
+                        alarmAdapter.updateAlarms(new ArrayList<>(alarmList));
+                    });
+        });
+
         recyclerViewAlarms.setAdapter(alarmAdapter);
 
         // کلیک روی دکمه بازگشت

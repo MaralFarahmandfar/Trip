@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,13 +19,20 @@ import java.util.List;
 import java.util.Locale;
 
 public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder> {
+
+    public interface OnTripDeleteListener {
+        void onTripDelete(Trip trip, int position);
+    }
+
     private final List<Trip> tripList;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final Context context;
+    private final OnTripDeleteListener deleteListener;
 
-    public TripAdapter(Context context, List<Trip> tripList) {
+    public TripAdapter(Context context, List<Trip> tripList, OnTripDeleteListener deleteListener) {
         this.context = context;
-        this.tripList = new ArrayList<>(tripList); // کپی لیست برای ایمنی
+        this.tripList = new ArrayList<>(tripList);
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -41,7 +51,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
                 (trip.getEndDate() != null ? sdf.format(trip.getEndDate()) : "نامشخص");
         holder.dates.setText(dates);
 
-        // کلیک روی هر آیتم
+        // کلیک روی آیتم برای رفتن به جزئیات سفر
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, TripDetailsActivity.class);
             intent.putExtra("trip_id", trip.getId());
@@ -50,6 +60,13 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             intent.putExtra("end_date", trip.getEndDate() != null ? sdf.format(trip.getEndDate()) : null);
             context.startActivity(intent);
         });
+
+        // کلیک روی آیکون حذف
+        holder.deleteButton.setOnClickListener(v -> {
+            if (deleteListener != null) {
+                deleteListener.onTripDelete(trip, position);
+            }
+        });
     }
 
     @Override
@@ -57,7 +74,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         return tripList.size();
     }
 
-    // متد جدید برای به‌روزرسانی لیست با DiffUtil
+    // متد به‌روزرسانی لیست با DiffUtil
     public void updateTrips(List<Trip> newTrips) {
         TripDiffCallback diffCallback = new TripDiffCallback(tripList, newTrips);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
@@ -66,17 +83,26 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         diffResult.dispatchUpdatesTo(this);
     }
 
+    // حذف آیتم محلی (برای استفاده بعد از حذف موفقیت‌آمیز در Firebase)
+    public void removeTripAt(int position) {
+        if (position >= 0 && position < tripList.size()) {
+            tripList.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
     static class TripViewHolder extends RecyclerView.ViewHolder {
         TextView name, dates;
+        ImageButton deleteButton;
 
         public TripViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tripName);
             dates = itemView.findViewById(R.id.tripDates);
+            deleteButton = itemView.findViewById(R.id.buttonDeleteTrip);
         }
     }
 
-    // کلاس DiffUtil برای مقایسه لیست‌ها
     static class TripDiffCallback extends DiffUtil.Callback {
         private final List<Trip> oldList;
         private final List<Trip> newList;

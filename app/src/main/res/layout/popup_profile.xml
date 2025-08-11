@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:elevation="4dp"
-    android:background="#D4E2ED">
+    android:background="@drawable/rounded_border"
+    >
 
     <TextView
         android:id="@+id/textViewUserName"

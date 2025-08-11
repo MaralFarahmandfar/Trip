@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,9 +23,16 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
     private final List<Alarm> alarmList;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
-    public AlarmAdapter(Context context, List<Alarm> alarmList) {
+    public interface OnAlarmDeleteListener {
+        void onAlarmDelete(Alarm alarm);
+    }
+
+    private final OnAlarmDeleteListener deleteListener;
+
+    public AlarmAdapter(Context context, List<Alarm> alarmList, OnAlarmDeleteListener deleteListener) {
         this.context = context;
         this.alarmList = new ArrayList<>(alarmList);
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -36,12 +44,19 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Log.d(TAG, "Binding position: " + position + ", alarmList size: " + alarmList.size());
         Alarm alarm = alarmList.get(position);
+
         holder.textViewName.setText(alarm.getName() != null ? alarm.getName() : "بدون نام");
         holder.textViewDateTime.setText(alarm.getDateTime() != null ? sdf.format(alarm.getDateTime()) : "نامشخص");
         holder.textViewNote.setText(alarm.getNote() != null && !alarm.getNote().isEmpty() ? alarm.getNote() : "بدون یادداشت");
+
+        holder.buttonDelete.setOnClickListener(v -> {
+            if (deleteListener != null) {
+                deleteListener.onAlarmDelete(alarm);
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {
@@ -60,14 +75,17 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName, textViewDateTime, textViewNote;
+        ImageButton buttonDelete;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.textViewAlarmName);
             textViewDateTime = itemView.findViewById(R.id.textViewAlarmDateTime);
             textViewNote = itemView.findViewById(R.id.textViewAlarmNote);
+            buttonDelete = itemView.findViewById(R.id.buttonDeleteAlarm);
         }
     }
+
 
     static class AlarmDiffCallback extends DiffUtil.Callback {
         private final List<Alarm> oldList;

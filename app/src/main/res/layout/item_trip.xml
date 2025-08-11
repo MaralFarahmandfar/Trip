@@ -32,6 +32,15 @@
             android:text="1/1/2025 - 3/1/2025"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
+
+        <ImageButton
+            android:id="@+id/buttonDeleteTrip"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_delete"
+            android:background="@android:color/transparent"
+            android:contentDescription="حذف سفر"
+            android:padding="6dp" />
     </LinearLayout>
 
     <!-- خط آبی جداکننده -->

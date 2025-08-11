@@ -76,9 +76,15 @@ public class HomeActivity extends AppCompatActivity {
 
         // تنظیم RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerViewTrips);
-        adapter = new TripAdapter(this, tripList);
+        adapter = new TripAdapter(this, tripList, (trip, position) -> deleteTripFromFirebase(trip));
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+
+
+
+
 
         // کلیک روی پروفایل برای نمایش منوی پاپ‌آپ
         profileImageView.setOnClickListener(v -> showProfilePopup(v));
@@ -135,6 +141,21 @@ public class HomeActivity extends AppCompatActivity {
         // بارگذاری سفرها
         loadTrips();
     }
+    private void deleteTripFromFirebase(Trip trip) {
+        if (trip == null || trip.getId() == null || trip.getId().isEmpty()) return;
+
+        db.collection("trips").document(trip.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "سفر حذف شد", Toast.LENGTH_SHORT).show();
+                    // حذف محلی حذف شود، چون Listener خودش لیست را آپدیت می‌کند
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "خطا در حذف سفر: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+
 
     // نمایش منوی پاپ‌آپ
     private void showProfilePopup(View anchorView) {
