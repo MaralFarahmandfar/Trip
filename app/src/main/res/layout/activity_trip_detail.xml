@@ -111,6 +111,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="نام جاذبه"
+            android:textColorHint="@color/hintColor"
+            android:textColor="@color/black"
             android:padding="8dp"
             android:background="@drawable/rounded_input_bg"/>
 

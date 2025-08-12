@@ -81,11 +81,6 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-
-
-
-
-
         // کلیک روی پروفایل برای نمایش منوی پاپ‌آپ
         profileImageView.setOnClickListener(v -> showProfilePopup(v));
 

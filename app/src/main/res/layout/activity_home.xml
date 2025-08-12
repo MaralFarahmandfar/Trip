@@ -101,40 +101,48 @@
             android:id="@+id/editTextTripName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="نام سفر" />
+            android:hint="نام سفر"
+            android:textColor="@color/black"
+            android:textColorHint="@color/hintColor"
+            android:backgroundTint="@color/colorAccent"/>
 
         <TextView
             android:id="@+id/textStartDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="تاریخ شروع: انتخاب نشده"
+            android:textColor="@color/black"
             android:paddingTop="12dp" />
 
         <Button
             android:id="@+id/buttonPickStartDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="انتخاب تاریخ شروع" />
+            android:text="انتخاب تاریخ شروع"
+            app:backgroundTint="@color/colorAccent"/>
 
         <TextView
             android:id="@+id/textEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="تاریخ پایان: انتخاب نشده"
+            android:textColor="@color/black"
             android:paddingTop="12dp" />
 
         <Button
             android:id="@+id/buttonPickEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="انتخاب تاریخ پایان" />
+            android:text="انتخاب تاریخ پایان"
+            app:backgroundTint="@color/colorAccent"/>
 
         <Button
             android:id="@+id/buttonSaveTrip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="ذخیره سفر"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            app:backgroundTint="@color/colorAccent"/>
     </LinearLayout>
 
 </RelativeLayout>

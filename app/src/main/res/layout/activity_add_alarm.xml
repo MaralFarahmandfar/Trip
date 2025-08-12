@@ -25,6 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="نام آلارم"
+        android:textColor="@color/black"
+        android:textColorHint="@color/hintColor"
         android:layout_marginTop="16dp" />
 
     <!-- یادداشت -->
@@ -33,6 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="یادداشت یا لیست وسایل"
+        android:textColor="@color/black"
+        android:textColorHint="@color/hintColor"
         android:layout_marginTop="8dp" />
 
     <!-- تاریخ -->
@@ -49,6 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="تاریخ انتخاب نشده"
+        android:textColor="@color/black"
         android:layout_marginBottom="8dp" />
 
     <!-- ساعت -->
@@ -66,9 +71,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="ساعت انتخاب نشده"
-        android:layout_marginBottom="16dp"
-        />
-
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
 
 
     <Button
