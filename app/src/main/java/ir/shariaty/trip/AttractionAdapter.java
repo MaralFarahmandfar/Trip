@@ -59,7 +59,7 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
                         Log.d(TAG, "Check status updated for attraction: " + attraction.getName());
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(context, "خطا در ذخیره وضعیت تیک: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "خطا در ذخیره وضعیت تیک: ", Toast.LENGTH_SHORT).show();
                     });
         });
 
@@ -104,7 +104,7 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
                                 Toast.makeText(context, "جاذبه ویرایش شد", Toast.LENGTH_SHORT).show();
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(context, "خطا در ویرایش: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "خطا در ویرایش: ", Toast.LENGTH_SHORT).show();
                             });
                 }
             });

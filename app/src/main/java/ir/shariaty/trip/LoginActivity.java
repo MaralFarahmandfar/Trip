@@ -76,11 +76,11 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(this, "ورود موفقیت‌آمیز بود", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "ورود موفق", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(this, "ورود ناموفق: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "ورود ناموفق: ", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -111,11 +111,11 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(LoginActivity.this, "ورود با گوگل موفق", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "ورود موفق با گوگل ", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(LoginActivity.this, "خطا در احراز هویت: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "خطا در احراز هویت: ", Toast.LENGTH_LONG).show();
                     }
                 });
     }

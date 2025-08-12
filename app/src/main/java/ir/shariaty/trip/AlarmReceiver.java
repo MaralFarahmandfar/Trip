@@ -23,7 +23,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // پخش صدای آلارم
         if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound); // فایل رو در res/raw قرار بده
+            mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound);
             mediaPlayer.setLooping(true);
             mediaPlayer.start();
         }

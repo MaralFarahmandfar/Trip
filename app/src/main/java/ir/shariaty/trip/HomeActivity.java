@@ -129,7 +129,7 @@ public class HomeActivity extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error saving trip", e);
-                        Toast.makeText(this, "خطا در ذخیره سفر: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "خطا در ذخیره سفر: ", Toast.LENGTH_LONG).show();
                     });
         });
 
@@ -146,7 +146,7 @@ public class HomeActivity extends AppCompatActivity {
                     // حذف محلی حذف شود، چون Listener خودش لیست را آپدیت می‌کند
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "خطا در حذف سفر: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "خطا در حذف سفر: ", Toast.LENGTH_LONG).show();
                 });
     }
 
@@ -222,7 +222,7 @@ public class HomeActivity extends AppCompatActivity {
                     isLoading = false;
                     if (e != null) {
                         Log.e(TAG, "Error loading trips", e);
-                        Toast.makeText(this, "خطا در بازیابی سفرها: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "خطا در بازیابی سفرها: ", Toast.LENGTH_LONG).show();
                         return;
                     }
                     if (queryDocumentSnapshots != null) {

@@ -92,16 +92,16 @@ public class SignUpActivity extends AppCompatActivity {
                             user.updateProfile(profileUpdates)
                                     .addOnCompleteListener(profileTask -> {
                                         if (profileTask.isSuccessful()) {
-                                            Toast.makeText(SignUpActivity.this, "ثبت‌نام موفق بود", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SignUpActivity.this, "ثبت‌ نام موفق", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
                                             finish();
                                         } else {
-                                            Toast.makeText(SignUpActivity.this, "خطا در ذخیره نام: " + profileTask.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                            Toast.makeText(SignUpActivity.this, "خطا در ذخیره نام: ", Toast.LENGTH_LONG).show();
                                         }
                                     });
                         }
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌نام: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌ نام: ", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -121,7 +121,7 @@ public class SignUpActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 Log.w("GoogleSignIn", "signInResult:failed code=" + e.getStatusCode(), e);
-                Toast.makeText(this, "خطا در ثبت‌نام با گوگل: " + e.getStatusCode(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "خطا در ثبت‌ نام با گوگل: ", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -132,11 +132,11 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(SignUpActivity.this, "ثبت‌نام با گوگل موفق", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, "ثبت‌ نام با گوگل موفق", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در احراز هویت: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در احراز هویت: ", Toast.LENGTH_LONG).show();
                     }
                 });
     }
