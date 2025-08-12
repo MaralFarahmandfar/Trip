@@ -286,6 +286,7 @@ public class TripDetailsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadAlarms();
+        loadAttractions();
     }
 
     private boolean isNetworkAvailable() {

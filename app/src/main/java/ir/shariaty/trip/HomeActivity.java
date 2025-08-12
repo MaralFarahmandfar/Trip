@@ -270,4 +270,9 @@ public class HomeActivity extends AppCompatActivity {
             popupWindow.dismiss();
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadTrips();
+    }
 }
