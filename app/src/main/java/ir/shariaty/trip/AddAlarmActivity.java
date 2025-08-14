@@ -56,7 +56,7 @@ public class AddAlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_alarm);
         ImageButton buttonBack = findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(v -> {
-            finish(); // یا finish();
+            finish();
         });
 
 
@@ -176,7 +176,7 @@ public class AddAlarmActivity extends AppCompatActivity {
                         })
                         .addOnFailureListener(e -> {
                             Log.e(TAG, "Error saving alarm", e);
-                            Toast.makeText(this, "خطا در ذخیره آلارم: ", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "خطا در ذخیره آلارم ", Toast.LENGTH_LONG).show();
                         });
             } else {
                 Toast.makeText(this, "خطا در تنظیم آلارم", Toast.LENGTH_LONG).show();

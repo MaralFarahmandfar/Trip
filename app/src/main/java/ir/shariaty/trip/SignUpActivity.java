@@ -98,12 +98,12 @@ public class SignUpActivity extends AppCompatActivity {
                                             startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
                                             finish();
                                         } else {
-                                            Toast.makeText(SignUpActivity.this, "خطا در ذخیره نام: ", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(SignUpActivity.this, "خطا در ذخیره نام ", Toast.LENGTH_LONG).show();
                                         }
                                     });
                         }
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌ نام: ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌ نام ", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -123,7 +123,7 @@ public class SignUpActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 Log.w("GoogleSignIn", "signInResult:failed code=" + e.getStatusCode(), e);
-                Toast.makeText(this, "خطا در ثبت‌ نام با گوگل: ", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "خطا در ثبت‌ نام با گوگل ", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -138,7 +138,7 @@ public class SignUpActivity extends AppCompatActivity {
                         startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در احراز هویت: ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در احراز هویت ", Toast.LENGTH_LONG).show();
                     }
                 });
     }

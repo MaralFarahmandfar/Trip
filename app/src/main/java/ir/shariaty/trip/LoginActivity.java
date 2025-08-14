@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(this, "ورود ناموفق: ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "ورود ناموفق ", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 Log.w("GoogleSignIn", "signInResult:failed code=" + e.getStatusCode() + ", message=" + e.getMessage(), e);
-                Toast.makeText(this, "خطا در ورود با گوگل: " + e.getStatusCode(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "خطا در ورود با گوگل " + e.getStatusCode(), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(LoginActivity.this, "خطا در احراز هویت: ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "خطا در احراز هویت ", Toast.LENGTH_LONG).show();
                     }
                 });
     }

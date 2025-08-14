@@ -158,7 +158,7 @@ public class TripDetailsActivity extends AppCompatActivity {
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error adding attraction", e);
-                        Toast.makeText(this, "خطا در اضافه کردن جاذبه: ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "خطا در اضافه کردن جاذبه ", Toast.LENGTH_LONG).show();
                     });
         });
 
@@ -219,7 +219,7 @@ public class TripDetailsActivity extends AppCompatActivity {
                     isLoadingAttractions = false;
                     if (e != null) {
                         Log.e(TAG, "Error loading attractions", e);
-                        Toast.makeText(this, "خطا در بازیابی جاذبه‌ها: ", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(this, "خطا در بازیابی جاذبه‌ها ", Toast.LENGTH_LONG).show();
                         return;
                     }
                     if (queryDocumentSnapshots != null) {
@@ -247,7 +247,7 @@ public class TripDetailsActivity extends AppCompatActivity {
                     isLoadingAlarms = false;
                     if (e != null) {
                         Log.e(TAG, "Error loading alarms", e);
-                        Toast.makeText(this, "خطا در بازیابی آلارم‌ها: ", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(this, "خطا در بازیابی آلارم‌ها ", Toast.LENGTH_LONG).show();
                         return;
                     }
                     if (queryDocumentSnapshots != null) {
