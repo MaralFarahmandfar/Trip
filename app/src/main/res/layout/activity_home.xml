@@ -119,7 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="انتخاب تاریخ شروع"
-            app:backgroundTint="@color/colorAccent"/>
+            app:backgroundTint="@color/colorPrimary"/>
 
         <TextView
             android:id="@+id/textEndDate"
@@ -134,7 +134,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="انتخاب تاریخ پایان"
-            app:backgroundTint="@color/colorAccent"/>
+            app:backgroundTint="@color/colorPrimary"/>
 
         <Button
             android:id="@+id/buttonSaveTrip"
