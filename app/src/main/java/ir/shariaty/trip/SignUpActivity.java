@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -24,6 +22,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
     private EditText editTextName, editTextEmail, editTextPassword, editTextConfirmPassword;
@@ -31,6 +33,7 @@ public class SignUpActivity extends AppCompatActivity {
     private SignInButton buttonGoogleSignIn;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseFirestore firestore;
     private static final int RC_SIGN_IN = 9001;
 
     @Override
@@ -39,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         mAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
         editTextName = findViewById(R.id.editTextFullName);
         editTextEmail = findViewById(R.id.editTextEmail);
@@ -63,7 +67,8 @@ public class SignUpActivity extends AppCompatActivity {
         String password = editTextPassword.getText().toString().trim();
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) ||
+                TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
             Toast.makeText(this, "همه فیلدها را پر کنید", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -94,23 +99,25 @@ public class SignUpActivity extends AppCompatActivity {
                             user.updateProfile(profileUpdates)
                                     .addOnCompleteListener(profileTask -> {
                                         if (profileTask.isSuccessful()) {
-                                            Toast.makeText(SignUpActivity.this, "ثبت‌ نام موفق", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
-                                            finish();
+                                            saveUserInFirestore(user.getUid(), name, email, () -> {
+                                                Toast.makeText(SignUpActivity.this, "ثبت‌ نام موفق", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
+                                                finish();
+                                            });
                                         } else {
-                                            Toast.makeText(SignUpActivity.this, "خطا در ذخیره نام ", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(SignUpActivity.this, "خطا در ذخیره نام", Toast.LENGTH_LONG).show();
                                         }
                                     });
                         }
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌ نام ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در ثبت‌ نام", Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        mGoogleSignInClient.signOut().addOnCompleteListener(task -> startActivityForResult(signInIntent, RC_SIGN_IN));
     }
 
     @Override
@@ -120,26 +127,48 @@ public class SignUpActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account.getIdToken());
+                if (account != null) {
+                    firebaseAuthWithGoogle(account);
+                }
             } catch (ApiException e) {
-                Log.w("GoogleSignIn", "signInResult:failed code=" + e.getStatusCode(), e);
-                Toast.makeText(this, "خطا در ثبت‌ نام با گوگل ", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "خطا در ثبت‌ نام با گوگل", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(SignUpActivity.this, "ثبت‌ نام با گوگل موفق", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
-                        finish();
+                        if (user != null) {
+                            saveUserInFirestore(user.getUid(), user.getDisplayName(), user.getEmail(), () -> {
+                                Toast.makeText(SignUpActivity.this, "ثبت ‌نام با گوگل موفق", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
+                                finish();
+                            });
+                        }
                     } else {
-                        Toast.makeText(SignUpActivity.this, "خطا در احراز هویت ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpActivity.this, "خطا در احراز هویت", Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void saveUserInFirestore(String uid, String name, String email, Runnable onSuccess) {
+        if (email == null) return;
+
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("uid", uid);
+        userMap.put("name", name);
+        userMap.put("email", email);
+
+        firestore.collection("users").document(uid)
+                .set(userMap)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "کاربر ذخیره شد");
+                    if (onSuccess != null) onSuccess.run();
+                })
+                .addOnFailureListener(e -> Log.w("Firestore", "خطا در ذخیره کاربر", e));
     }
 }

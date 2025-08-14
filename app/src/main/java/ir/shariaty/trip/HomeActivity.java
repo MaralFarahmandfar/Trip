@@ -55,10 +55,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // اتصال به Firebase
         db = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        db.setFirestoreSettings(settings);
+
 
         mAuth = FirebaseAuth.getInstance();
 

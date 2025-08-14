@@ -16,18 +16,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class LoginActivity extends AppCompatActivity {
+
     private EditText editTextEmail, editTextPassword;
     private Button buttonLogin, buttonGotoSignUp;
     private SignInButton buttonGoogleSignIn;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseFirestore firestore;
     private static final int RC_SIGN_IN = 9001;
 
     @Override
@@ -36,6 +39,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
+        if (firestore.getFirestoreSettings() == null) {
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(false)
+                    .build();
+            firestore.setFirestoreSettings(settings);
+        }
 
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
@@ -50,12 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         buttonLogin.setOnClickListener(v -> loginUser());
-
-        buttonGotoSignUp.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-            startActivity(intent);
-        });
-
+        buttonGotoSignUp.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, SignUpActivity.class)));
         buttonGoogleSignIn.setOnClickListener(v -> signInWithGoogle());
     }
 
@@ -80,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(this, "ورود ناموفق ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "ورود ناموفق", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -88,35 +94,64 @@ public class LoginActivity extends AppCompatActivity {
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+        Log.d("SignIn", "Starting Google Sign-In Intent");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account.getIdToken());
+                GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException.class);
+                if (account != null) {
+                    firebaseAuthWithGoogle(account);
+                }
             } catch (ApiException e) {
-                Log.w("GoogleSignIn", "signInResult:failed code=" + e.getStatusCode() + ", message=" + e.getMessage(), e);
-                Toast.makeText(this, "خطا در ورود با گوگل " + e.getStatusCode(), Toast.LENGTH_LONG).show();
+                Log.e("SignIn", "Google Sign-In failed: " + e.getStatusCode());
+                Toast.makeText(this, "خطا در ورود با گوگل: " + e.getStatusCode(), Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(LoginActivity.this, "ورود موفق با گوگل ", Toast.LENGTH_SHORT).show();
+                        if (user != null) {
+                            checkUserInFirestore(user);
+                        }
+                    } else {
+                        Log.e("SignIn", "Firebase authentication failed", task.getException());
+                        Toast.makeText(this, "خطا در احراز هویت", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void checkUserInFirestore(FirebaseUser user) {
+        String uid = user.getUid();
+        firestore.collection("users").document(uid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // کاربر قبلاً ثبت‌نام کرده
+                        Log.d("Firestore", "کاربر پیدا شد: " + user.getEmail());
+                        Toast.makeText(this, "ورود موفق", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(LoginActivity.this, "خطا در احراز هویت ", Toast.LENGTH_LONG).show();
+                        // کاربر ثبت‌نام نکرده
+                        Log.d("Firestore", "کاربر پیدا نشد: " + user.getEmail());
+                        Toast.makeText(this, "ایمیل هنوز ثبت ‌نام نشده", Toast.LENGTH_LONG).show();
+                        // اختیاری: کاربر رو sign out کن تا دوباره امتحان کنه
+                        mAuth.signOut();
+                        mGoogleSignInClient.signOut();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "خطا در چک کردن کاربر", e);
+                    Toast.makeText(this, "خطا در بررسی ثبت‌نام", Toast.LENGTH_LONG).show();
                 });
     }
 }

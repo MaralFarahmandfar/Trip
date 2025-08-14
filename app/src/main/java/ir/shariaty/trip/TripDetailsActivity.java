@@ -61,10 +61,6 @@ public class TripDetailsActivity extends AppCompatActivity {
 
         // اتصال به Firebase Firestore
         db = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        db.setFirestoreSettings(settings);
 
         mAuth = FirebaseAuth.getInstance();
 

@@ -64,10 +64,7 @@ public class AddAlarmActivity extends AppCompatActivity {
 
         // اتصال به Firestore
         db = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        db.setFirestoreSettings(settings);
+
 
         // گرفتن tripId از Intent
         tripId = getIntent().getStringExtra("trip_id");
