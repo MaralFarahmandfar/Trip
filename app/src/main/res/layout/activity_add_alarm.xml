@@ -45,6 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="انتخاب تاریخ"
+        android:textColor="@color/white"
         android:backgroundTint="@color/colorPrimary"
         />
 
@@ -62,6 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="انتخاب ساعت"
+        android:textColor="@color/white"
         android:backgroundTint="@color/colorPrimary"
 
         />
