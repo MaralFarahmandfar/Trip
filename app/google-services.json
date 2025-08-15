@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "103272119870-i7fnn361qm71qi4pd9qekpin3gkhl94p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ir.shariaty.trip",
+            "certificate_hash": "44710a32285178a7a5716ccbc6205d1e40902830"
+          }
+        },
+        {
+          "client_id": "103272119870-vmam0cthjiodt94m0tjvq7k84670q2km.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ir.shariaty.trip",
+            "certificate_hash": "a97f158fbff655c192039173040529a404bdfaed"
+          }
+        },
+        {
           "client_id": "103272119870-i811n331dqam0e98c3cstuh4vlgt25mp.apps.googleusercontent.com",
           "client_type": 3
         }
