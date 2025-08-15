@@ -93,7 +93,6 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
             builder.setPositiveButton("تأیید", (dialog, which) -> {
                 String newName = input.getText().toString().trim();
                 if (!newName.isEmpty()) {
-                    attraction.setName(newName);
                     FirebaseFirestore.getInstance()
                             .collection("trips")
                             .document(tripId)
@@ -101,6 +100,10 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
                             .document(attraction.getId())
                             .update("name", newName)
                             .addOnSuccessListener(aVoid -> {
+                                // تغییر در لیست محلی
+                                attraction.setName(newName);
+                                notifyItemChanged(holder.getAdapterPosition());
+
                                 Toast.makeText(context, "جاذبه ویرایش شد", Toast.LENGTH_SHORT).show();
                             })
                             .addOnFailureListener(e -> {
@@ -112,6 +115,7 @@ public class AttractionAdapter extends RecyclerView.Adapter<AttractionAdapter.Vi
             builder.setNegativeButton("انصراف", (dialog, which) -> dialog.dismiss());
             builder.show();
         });
+
     }
 
     @Override
